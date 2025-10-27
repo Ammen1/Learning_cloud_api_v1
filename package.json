@@ -1,0 +1,40 @@
+{
+  "name": "learning-cloud-backend",
+  "version": "1.0.0",
+  "description": "Learning Cloud Django Backend API",
+  "main": "index.js",
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio",
+    "prisma:reset": "prisma migrate reset",
+    "setup": "npm install && prisma generate",
+    "dev": "python manage.py runserver",
+    "migrate": "python manage.py migrate",
+    "collectstatic": "python manage.py collectstatic",
+    "test": "python manage.py test",
+    "lint": "flake8 .",
+    "format": "black ."
+  },
+  "keywords": [
+    "django",
+    "education",
+    "learning",
+    "api",
+    "prisma",
+    "postgresql"
+  ],
+  "author": "Learning Cloud Team",
+  "license": "MIT",
+  "devDependencies": {
+    "prisma": "^5.0.0",
+    "@prisma/client": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0",
+    "python": ">=3.9.0"
+  }
+}
+
+

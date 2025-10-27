@@ -1,0 +1,4371 @@
+openapi: 3.0.3
+info:
+  title: Learning Cloud API
+  version: 1.0.0
+  description: Learning Management System for students. OAuth2 Bearer token auth.
+paths:
+  /:
+    get:
+      operationId: root_list
+      description: List quizzes for a subject or grade level
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuizList'
+          description: ''
+  /{id}/:
+    get:
+      operationId: root_retrieve
+      description: Get detailed quiz information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizDetail'
+          description: ''
+    put:
+      operationId: root_update
+      description: Get and update specific student progress
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentProgress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentProgress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentProgress'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProgress'
+          description: ''
+    patch:
+      operationId: root_partial_update
+      description: Get and update specific student progress
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentProgress'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentProgress'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentProgress'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProgress'
+          description: ''
+  /{id}/mark-read/:
+    post:
+      operationId: mark_read_create
+      description: Mark a specific notification as read
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - mark-read
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /{quiz_id}/analytics/:
+    get:
+      operationId: analytics_retrieve
+      description: Get analytics for a specific quiz (teachers only)
+      parameters:
+      - in: path
+        name: quiz_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - analytics
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /attempts/:
+    get:
+      operationId: attempts_list
+      description: List user's quiz attempts
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - attempts
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuizAttemptList'
+          description: ''
+  /attempts/start/:
+    post:
+      operationId: attempts_start_create
+      description: Start a new quiz attempt
+      tags:
+      - attempts
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizAttemptCreate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuizAttemptCreate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuizAttemptCreate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizAttemptCreate'
+          description: ''
+  /auth/logout/:
+    post:
+      operationId: auth_logout_create
+      description: Logout endpoint
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /auth/parent-login/:
+    post:
+      operationId: auth_parent_login_create
+      description: Parent login
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /auth/register/:
+    post:
+      operationId: auth_register_create
+      description: User registration endpoint
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /auth/student-login/:
+    post:
+      operationId: auth_student_login_create
+      description: Student login with Student ID and PIN
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /auth/teacher-login/:
+    post:
+      operationId: auth_teacher_login_create
+      description: Teacher login
+      tags:
+      - auth
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /bookmark/:
+    post:
+      operationId: bookmark_create
+      description: Bookmark a lesson
+      tags:
+      - bookmark
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /bookmarks/:
+    get:
+      operationId: bookmarks_list
+      description: Manage content bookmarks
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - bookmarks
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContentBookmarkList'
+          description: ''
+    post:
+      operationId: bookmarks_create
+      description: Manage content bookmarks
+      tags:
+      - bookmarks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentBookmark'
+          description: ''
+  /bookmarks/{bookmark_id}/remove/:
+    delete:
+      operationId: bookmarks_remove_destroy
+      description: Remove a bookmark
+      parameters:
+      - in: path
+        name: bookmark_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookmarks
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /bookmarks/{id}/:
+    get:
+      operationId: bookmarks_list_2
+      description: Manage content bookmarks
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - bookmarks
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContentBookmarkList'
+          description: ''
+    post:
+      operationId: bookmarks_create_2
+      description: Manage content bookmarks
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - bookmarks
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentBookmark'
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentBookmark'
+          description: ''
+  /campaigns/:
+    get:
+      operationId: campaigns_list
+      description: List and create notification campaigns (admin only)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - campaigns
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationCampaignList'
+          description: ''
+    post:
+      operationId: campaigns_create
+      description: List and create notification campaigns (admin only)
+      tags:
+      - campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCampaign'
+          description: ''
+  /campaigns/{id}/:
+    get:
+      operationId: campaigns_retrieve
+      description: Get, update, and delete notification campaigns (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - campaigns
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCampaign'
+          description: ''
+    put:
+      operationId: campaigns_update
+      description: Get, update, and delete notification campaigns (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationCampaign'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCampaign'
+          description: ''
+    patch:
+      operationId: campaigns_partial_update
+      description: Get, update, and delete notification campaigns (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - campaigns
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationCampaign'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationCampaign'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationCampaign'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationCampaign'
+          description: ''
+    delete:
+      operationId: campaigns_destroy
+      description: Get, update, and delete notification campaigns (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - campaigns
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /campaigns/{id}/send/:
+    post:
+      operationId: campaigns_send_create
+      description: Send a notification campaign (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - campaigns
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /change-password/:
+    post:
+      operationId: change_password_create
+      description: Change user password
+      tags:
+      - change-password
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /change-pin/:
+    post:
+      operationId: change_pin_create
+      description: Change student PIN
+      tags:
+      - change-pin
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /chapters/:
+    get:
+      operationId: chapters_list
+      description: List chapters for a subject
+      parameters:
+      - in: query
+        name: is_active
+        schema:
+          type: boolean
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: subject
+        schema:
+          type: integer
+      tags:
+      - chapters
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedChapterList'
+          description: ''
+  /chapters/{id}/:
+    get:
+      operationId: chapters_retrieve
+      description: Get detailed chapter information with lessons
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - chapters
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChapterWithLessons'
+          description: ''
+  /dashboard/:
+    get:
+      operationId: dashboard_retrieve
+      description: Get analytics dashboard data
+      tags:
+      - dashboard
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /export/:
+    get:
+      operationId: export_retrieve
+      description: Export analytics data
+      tags:
+      - export
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /feedback/:
+    get:
+      operationId: feedback_list
+      description: List and create quiz feedback
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - feedback
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedQuizFeedbackList'
+          description: ''
+    post:
+      operationId: feedback_create
+      description: List and create quiz feedback
+      tags:
+      - feedback
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizFeedback'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuizFeedback'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuizFeedback'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizFeedback'
+          description: ''
+  /grade/:
+    get:
+      operationId: grade_retrieve
+      description: Get grade-level progress
+      tags:
+      - grade
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GradeProgress'
+          description: ''
+  /lessons/:
+    get:
+      operationId: lessons_list
+      description: List lessons for a chapter
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - lessons
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLessonList'
+          description: ''
+  /lessons/{lesson_id}/media/:
+    post:
+      operationId: lessons_media_create
+      description: Upload media files for a lesson
+      parameters:
+      - in: path
+        name: lesson_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lessons
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /lessons/{lesson_id}/request-access/:
+    post:
+      operationId: lessons_request_access_create
+      description: Request premium access to a lesson
+      parameters:
+      - in: path
+        name: lesson_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lessons
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /lessons/{lesson_id}/update/:
+    post:
+      operationId: lessons_update_create
+      description: Update progress for a specific lesson
+      parameters:
+      - in: path
+        name: lesson_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lessons
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /lessons/{id}/:
+    get:
+      operationId: lessons_retrieve
+      description: Get detailed lesson information
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - lessons
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LessonDetail'
+          description: ''
+  /mark-all-read/:
+    post:
+      operationId: mark_all_read_create
+      description: Mark all notifications as read for the user
+      tags:
+      - mark-all-read
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /milestones/:
+    get:
+      operationId: milestones_list
+      description: List user's progress milestones
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - milestones
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProgressMilestoneList'
+          description: ''
+  /monthly/:
+    get:
+      operationId: monthly_retrieve
+      description: Get monthly progress data for the authenticated user
+      tags:
+      - monthly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /offline/:
+    get:
+      operationId: offline_list
+      description: List available offline content
+      parameters:
+      - in: query
+        name: is_available
+        schema:
+          type: boolean
+      - in: query
+        name: lesson
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - offline
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOfflineContentList'
+          description: ''
+  /parent-dashboard/{child_id}/:
+    get:
+      operationId: parent_dashboard_retrieve
+      description: Get parent dashboard data for a specific child
+      parameters:
+      - in: path
+        name: child_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - parent-dashboard
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /preferences/:
+    get:
+      operationId: preferences_retrieve
+      description: Get and update notification preferences
+      tags:
+      - preferences
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreference'
+          description: ''
+    put:
+      operationId: preferences_update
+      description: Get and update notification preferences
+      tags:
+      - preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPreference'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationPreference'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationPreference'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreference'
+          description: ''
+    patch:
+      operationId: preferences_partial_update
+      description: Get and update notification preferences
+      tags:
+      - preferences
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreference'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreference'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreference'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreference'
+          description: ''
+  /profile/:
+    get:
+      operationId: profile_retrieve
+      description: User profile management
+      tags:
+      - profile
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: profile_update
+      description: User profile management
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: profile_partial_update
+      description: User profile management
+      tags:
+      - profile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /rate/:
+    post:
+      operationId: rate_create
+      description: Rate a lesson
+      tags:
+      - rate
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /ratings/:
+    get:
+      operationId: ratings_list
+      description: List and create content ratings
+      parameters:
+      - in: query
+        name: lesson
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: rating
+        schema:
+          type: integer
+      tags:
+      - ratings
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContentRatingList'
+          description: ''
+    post:
+      operationId: ratings_create
+      description: List and create content ratings
+      tags:
+      - ratings
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentRating'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContentRating'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContentRating'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentRating'
+          description: ''
+  /reports/:
+    get:
+      operationId: reports_list
+      description: List analytics reports
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAnalyticsReportList'
+          description: ''
+  /reports/{id}/:
+    get:
+      operationId: reports_retrieve
+      description: Get detailed analytics report
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - reports
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsReport'
+          description: ''
+  /schools/:
+    get:
+      operationId: schools_list
+      description: List all active schools
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - schools
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSchoolList'
+          description: ''
+  /search/:
+    get:
+      operationId: search_list
+      description: Search content across subjects, chapters, and lessons
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - search
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLessonList'
+          description: ''
+  /sessions/:
+    get:
+      operationId: sessions_list
+      description: List user's active sessions
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserSessionList'
+          description: ''
+  /sessions/{session_id}/terminate/:
+    post:
+      operationId: sessions_terminate_create
+      description: Terminate a specific session
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sessions/{session_key}/:
+    get:
+      operationId: sessions_retrieve
+      description: Manage active quiz session
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSession'
+          description: ''
+    put:
+      operationId: sessions_update
+      description: Manage active quiz session
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuizSession'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/QuizSession'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/QuizSession'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSession'
+          description: ''
+    patch:
+      operationId: sessions_partial_update
+      description: Manage active quiz session
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedQuizSession'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedQuizSession'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedQuizSession'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuizSession'
+          description: ''
+  /sessions/{session_key}/abandon/:
+    post:
+      operationId: sessions_abandon_create
+      description: Abandon a quiz attempt
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sessions/{session_key}/complete/:
+    post:
+      operationId: sessions_complete_create
+      description: Complete a quiz attempt
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /sessions/{session_key}/submit-answer/:
+    post:
+      operationId: sessions_submit_answer_create
+      description: Submit an answer for the current question in a quiz session
+      parameters:
+      - in: path
+        name: session_key
+        schema:
+          type: string
+        required: true
+      tags:
+      - sessions
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /stats/:
+    get:
+      operationId: stats_retrieve
+      description: Get user statistics
+      tags:
+      - stats
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /streak/:
+    get:
+      operationId: streak_retrieve
+      description: Get user's learning streak information
+      tags:
+      - streak
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LearningStreak'
+          description: ''
+  /subjects/:
+    get:
+      operationId: subjects_list
+      description: List all subjects for a grade level
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - subjects
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSubjectList'
+          description: ''
+  /subjects/{id}/:
+    get:
+      operationId: subjects_retrieve
+      description: Get detailed subject information with chapters
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - subjects
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubjectWithChapters'
+          description: ''
+  /templates/:
+    get:
+      operationId: templates_list
+      description: List and create notification templates (admin only)
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - templates
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationTemplateList'
+          description: ''
+    post:
+      operationId: templates_create
+      description: List and create notification templates (admin only)
+      tags:
+      - templates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+  /templates/{id}/:
+    get:
+      operationId: templates_retrieve
+      description: Get, update, and delete notification templates (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - templates
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+    put:
+      operationId: templates_update
+      description: Get, update, and delete notification templates (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - templates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationTemplate'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+    patch:
+      operationId: templates_partial_update
+      description: Get, update, and delete notification templates (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - templates
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationTemplate'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationTemplate'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationTemplate'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationTemplate'
+          description: ''
+    delete:
+      operationId: templates_destroy
+      description: Get, update, and delete notification templates (admin only)
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - templates
+      security:
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /unread-count/:
+    get:
+      operationId: unread_count_retrieve
+      description: Get count of unread notifications
+      tags:
+      - unread-count
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /weekly/:
+    get:
+      operationId: weekly_retrieve
+      description: Get weekly progress data for the authenticated user
+      tags:
+      - weekly
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /en-us/auth/logout/:
+    post:
+      operationId: en_us_auth_logout_create
+      description: Logout endpoint
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /en-us/auth/parent-login/:
+    post:
+      operationId: en_us_auth_parent_login_create
+      description: Parent login
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /en-us/auth/register/:
+    post:
+      operationId: en_us_auth_register_create
+      description: User registration endpoint
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /en-us/auth/student-login/:
+    post:
+      operationId: en_us_auth_student_login_create
+      description: Student login with Student ID and PIN
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /en-us/auth/teacher-login/:
+    post:
+      operationId: en_us_auth_teacher_login_create
+      description: Teacher login
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /en-us/change-password/:
+    post:
+      operationId: en_us_change_password_create
+      description: Change user password
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /en-us/change-pin/:
+    post:
+      operationId: en_us_change_pin_create
+      description: Change student PIN
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /en-us/profile/:
+    get:
+      operationId: en_us_profile_retrieve
+      description: User profile management
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    put:
+      operationId: en_us_profile_update
+      description: User profile management
+      tags:
+      - en-us
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+    patch:
+      operationId: en_us_profile_partial_update
+      description: User profile management
+      tags:
+      - en-us
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserProfile'
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+          description: ''
+  /en-us/schools/:
+    get:
+      operationId: en_us_schools_list
+      description: List all active schools
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSchoolList'
+          description: ''
+  /en-us/sessions/:
+    get:
+      operationId: en_us_sessions_list
+      description: List user's active sessions
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserSessionList'
+          description: ''
+  /en-us/sessions/{session_id}/terminate/:
+    post:
+      operationId: en_us_sessions_terminate_create
+      description: Terminate a specific session
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+  /en-us/stats/:
+    get:
+      operationId: en_us_stats_retrieve
+      description: Get user statistics
+      tags:
+      - en-us
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    AnalyticsReport:
+      type: object
+      description: Serializer for AnalyticsReport model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        report_type:
+          $ref: '#/components/schemas/ReportTypeEnum'
+        report_scope:
+          $ref: '#/components/schemas/ReportScopeEnum'
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        filters:
+          type: object
+          additionalProperties: {}
+        data:
+          type: object
+          additionalProperties: {}
+        summary:
+          type: object
+          additionalProperties: {}
+        generated_by:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        generated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        is_scheduled:
+          type: boolean
+        schedule_frequency:
+          type: string
+          maxLength: 20
+      required:
+      - data
+      - end_date
+      - generated_at
+      - generated_by
+      - id
+      - report_scope
+      - report_type
+      - start_date
+      - title
+    Answer:
+      type: object
+      description: Serializer for Answer model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question:
+          allOf:
+          - $ref: '#/components/schemas/Question'
+          readOnly: true
+        answer_text:
+          type: string
+          nullable: true
+        is_correct:
+          type: boolean
+          readOnly: true
+        points_earned:
+          type: number
+          format: double
+          readOnly: true
+        time_spent:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - is_correct
+      - points_earned
+      - question
+    CampaignTypeEnum:
+      enum:
+      - BROADCAST
+      - TARGETED
+      - SCHEDULED
+      - TRIGGERED
+      type: string
+      description: |-
+        * `BROADCAST` - Broadcast
+        * `TARGETED` - Targeted
+        * `SCHEDULED` - Scheduled
+        * `TRIGGERED` - Triggered
+    Chapter:
+      type: object
+      description: Serializer for Chapter model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        subject:
+          type: integer
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          default: 0
+        is_active:
+          type: boolean
+        estimated_duration:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - estimated_duration
+      - id
+      - lesson_count
+      - subject
+      - title
+      - updated_at
+    ChapterWithLessons:
+      type: object
+      description: Serializer for Chapter with nested lessons
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        subject:
+          type: integer
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          default: 0
+        is_active:
+          type: boolean
+        estimated_duration:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
+          readOnly: true
+      required:
+      - created_at
+      - estimated_duration
+      - id
+      - lesson_count
+      - lessons
+      - subject
+      - title
+      - updated_at
+    ContentBookmark:
+      type: object
+      description: Serializer for ContentBookmark model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        lesson:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - lesson
+      - user
+    ContentRating:
+      type: object
+      description: Serializer for ContentRating model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        lesson:
+          type: integer
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+        review:
+          type: string
+          nullable: true
+        is_helpful:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - lesson
+      - rating
+      - updated_at
+      - user
+    ContentTypeEnum:
+      enum:
+      - SLIDES
+      - VIDEO
+      - AUDIO
+      - READING
+      - INTERACTIVE
+      type: string
+      description: |-
+        * `SLIDES` - Slides
+        * `VIDEO` - Video
+        * `AUDIO` - Audio
+        * `READING` - Reading
+        * `INTERACTIVE` - Interactive
+    GradeLevelEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      type: integer
+      description: |-
+        * `1` - Grade 1
+        * `2` - Grade 2
+        * `3` - Grade 3
+        * `4` - Grade 4
+    GradeProgress:
+      type: object
+      description: Serializer for GradeProgress model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        grade_level:
+          type: integer
+          maximum: 4
+          minimum: 1
+        total_subjects:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        completed_subjects:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        subject_completion_percentage:
+          type: string
+          readOnly: true
+        total_lessons:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        completed_lessons:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        lesson_completion_percentage:
+          type: string
+          readOnly: true
+        total_quizzes:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        passed_quizzes:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        quiz_pass_percentage:
+          type: string
+          readOnly: true
+        total_time_spent:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        time_spent_display:
+          type: string
+          readOnly: true
+        overall_average:
+          type: number
+          format: double
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - grade_level
+      - id
+      - lesson_completion_percentage
+      - quiz_pass_percentage
+      - student
+      - subject_completion_percentage
+      - time_spent_display
+      - updated_at
+    LearningStreak:
+      type: object
+      description: Serializer for LearningStreak model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        current_streak:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        longest_streak:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        last_activity_date:
+          type: string
+          format: date
+          nullable: true
+        streak_start_date:
+          type: string
+          format: date
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - student
+      - updated_at
+    Lesson:
+      type: object
+      description: Serializer for Lesson model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        content:
+          type: string
+        content_type:
+          $ref: '#/components/schemas/ContentTypeEnum'
+        video_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        audio_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        chapter:
+          type: integer
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          default: 0
+        is_active:
+          type: boolean
+        is_premium:
+          type: boolean
+        thumbnail_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        learning_objectives:
+          type: object
+          additionalProperties: {}
+        prerequisites:
+          type: array
+          items:
+            type: integer
+        media_files:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonMedia'
+          readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
+        rating_count:
+          type: string
+          readOnly: true
+        is_bookmarked:
+          type: string
+          readOnly: true
+        user_rating:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - average_rating
+      - chapter
+      - content
+      - created_at
+      - id
+      - is_bookmarked
+      - media_files
+      - rating_count
+      - title
+      - updated_at
+      - user_rating
+    LessonDetail:
+      type: object
+      description: Detailed serializer for Lesson with full content
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        content:
+          type: string
+        content_type:
+          $ref: '#/components/schemas/ContentTypeEnum'
+        video_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        audio_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        duration:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        chapter:
+          allOf:
+          - $ref: '#/components/schemas/Chapter'
+          readOnly: true
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          default: 0
+        is_active:
+          type: boolean
+        is_premium:
+          type: boolean
+        thumbnail_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        learning_objectives:
+          type: object
+          additionalProperties: {}
+        prerequisites:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        media_files:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonMedia'
+          readOnly: true
+        average_rating:
+          type: string
+          readOnly: true
+        rating_count:
+          type: string
+          readOnly: true
+        is_bookmarked:
+          type: string
+          readOnly: true
+        user_rating:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - average_rating
+      - chapter
+      - content
+      - created_at
+      - id
+      - is_bookmarked
+      - media_files
+      - prerequisites
+      - rating_count
+      - title
+      - updated_at
+      - user_rating
+    LessonMedia:
+      type: object
+      description: Serializer for LessonMedia model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        media_type:
+          $ref: '#/components/schemas/MediaTypeEnum'
+        file_url:
+          type: string
+          format: uri
+          maxLength: 200
+        file_name:
+          type: string
+          maxLength: 255
+        file_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        mime_type:
+          type: string
+          maxLength: 100
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+      required:
+      - file_name
+      - file_url
+      - id
+      - media_type
+      - mime_type
+    MediaTypeEnum:
+      enum:
+      - IMAGE
+      - VIDEO
+      - AUDIO
+      - DOCUMENT
+      type: string
+      description: |-
+        * `IMAGE` - Image
+        * `VIDEO` - Video
+        * `AUDIO` - Audio
+        * `DOCUMENT` - Document
+    MilestoneTypeEnum:
+      enum:
+      - LESSON_COMPLETION
+      - SUBJECT_COMPLETION
+      - STREAK_ACHIEVEMENT
+      - SCORE_ACHIEVEMENT
+      - TIME_ACHIEVEMENT
+      type: string
+      description: |-
+        * `LESSON_COMPLETION` - Lesson Completion
+        * `SUBJECT_COMPLETION` - Subject Completion
+        * `STREAK_ACHIEVEMENT` - Streak Achievement
+        * `SCORE_ACHIEVEMENT` - Score Achievement
+        * `TIME_ACHIEVEMENT` - Time Achievement
+    NotificationCampaign:
+      type: object
+      description: Serializer for NotificationCampaign model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        campaign_type:
+          $ref: '#/components/schemas/CampaignTypeEnum'
+        title:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        target_users:
+          type: object
+          additionalProperties: {}
+        target_count:
+          type: integer
+          readOnly: true
+        scheduled_for:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/NotificationCampaignStatusEnum'
+        sent_count:
+          type: integer
+          readOnly: true
+        delivered_count:
+          type: integer
+          readOnly: true
+        failed_count:
+          type: integer
+          readOnly: true
+        read_count:
+          type: integer
+          readOnly: true
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - campaign_type
+      - created_at
+      - created_by
+      - delivered_count
+      - failed_count
+      - id
+      - message
+      - name
+      - notification_type
+      - read_count
+      - sent_count
+      - target_count
+      - title
+      - updated_at
+    NotificationCampaignStatusEnum:
+      enum:
+      - DRAFT
+      - SCHEDULED
+      - RUNNING
+      - COMPLETED
+      - CANCELLED
+      type: string
+      description: |-
+        * `DRAFT` - Draft
+        * `SCHEDULED` - Scheduled
+        * `RUNNING` - Running
+        * `COMPLETED` - Completed
+        * `CANCELLED` - Cancelled
+    NotificationPreference:
+      type: object
+      description: Serializer for NotificationPreference model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        email_enabled:
+          type: boolean
+        email_lesson_completed:
+          type: boolean
+        email_quiz_result:
+          type: boolean
+        email_achievement:
+          type: boolean
+        email_reminders:
+          type: boolean
+        email_system:
+          type: boolean
+        push_enabled:
+          type: boolean
+        push_lesson_completed:
+          type: boolean
+        push_quiz_result:
+          type: boolean
+        push_achievement:
+          type: boolean
+        push_reminders:
+          type: boolean
+        push_system:
+          type: boolean
+        in_app_enabled:
+          type: boolean
+        in_app_lesson_completed:
+          type: boolean
+        in_app_quiz_result:
+          type: boolean
+        in_app_achievement:
+          type: boolean
+        in_app_reminders:
+          type: boolean
+        in_app_system:
+          type: boolean
+        quiet_hours_start:
+          type: string
+          format: time
+          nullable: true
+        quiet_hours_end:
+          type: string
+          format: time
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 50
+        reminder_frequency:
+          $ref: '#/components/schemas/ReminderFrequencyEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - updated_at
+      - user
+    NotificationTemplate:
+      type: object
+      description: Serializer for NotificationTemplate model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        title_template:
+          type: string
+          maxLength: 200
+        message_template:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        variables:
+          type: object
+          additionalProperties: {}
+        is_active:
+          type: boolean
+        auto_send:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - message_template
+      - name
+      - notification_type
+      - title_template
+      - updated_at
+    NotificationTypeEnum:
+      enum:
+      - LESSON_COMPLETED
+      - QUIZ_RESULT
+      - ACHIEVEMENT
+      - STREAK_MILESTONE
+      - REMINDER
+      - SYSTEM
+      - PARENT_UPDATE
+      - TEACHER_MESSAGE
+      - CONTENT_UPDATE
+      - MAINTENANCE
+      type: string
+      description: |-
+        * `LESSON_COMPLETED` - Lesson Completed
+        * `QUIZ_RESULT` - Quiz Result
+        * `ACHIEVEMENT` - Achievement Unlocked
+        * `STREAK_MILESTONE` - Streak Milestone
+        * `REMINDER` - Learning Reminder
+        * `SYSTEM` - System Notification
+        * `PARENT_UPDATE` - Parent Update
+        * `TEACHER_MESSAGE` - Teacher Message
+        * `CONTENT_UPDATE` - Content Update
+        * `MAINTENANCE` - Maintenance Notice
+    NullEnum:
+      enum:
+      - null
+    OfflineContent:
+      type: object
+      description: Serializer for OfflineContent model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        lesson:
+          type: integer
+        download_url:
+          type: string
+          format: uri
+          maxLength: 200
+        file_size:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        checksum:
+          type: string
+          maxLength: 64
+        is_available:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - checksum
+      - created_at
+      - download_url
+      - file_size
+      - id
+      - lesson
+      - updated_at
+    PaginatedAnalyticsReportList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AnalyticsReport'
+    PaginatedChapterList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Chapter'
+    PaginatedContentBookmarkList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentBookmark'
+    PaginatedContentRatingList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentRating'
+    PaginatedLessonList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Lesson'
+    PaginatedNotificationCampaignList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationCampaign'
+    PaginatedNotificationTemplateList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationTemplate'
+    PaginatedOfflineContentList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/OfflineContent'
+    PaginatedProgressMilestoneList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressMilestone'
+    PaginatedQuizAttemptList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizAttempt'
+    PaginatedQuizFeedbackList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/QuizFeedback'
+    PaginatedQuizList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Quiz'
+    PaginatedSchoolList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/School'
+    PaginatedSubjectList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Subject'
+    PaginatedUserSessionList:
+      type: object
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSession'
+    PatchedNotificationCampaign:
+      type: object
+      description: Serializer for NotificationCampaign model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        campaign_type:
+          $ref: '#/components/schemas/CampaignTypeEnum'
+        title:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        target_users:
+          type: object
+          additionalProperties: {}
+        target_count:
+          type: integer
+          readOnly: true
+        scheduled_for:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+          nullable: true
+        status:
+          $ref: '#/components/schemas/NotificationCampaignStatusEnum'
+        sent_count:
+          type: integer
+          readOnly: true
+        delivered_count:
+          type: integer
+          readOnly: true
+        failed_count:
+          type: integer
+          readOnly: true
+        read_count:
+          type: integer
+          readOnly: true
+        created_by:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedNotificationPreference:
+      type: object
+      description: Serializer for NotificationPreference model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        email_enabled:
+          type: boolean
+        email_lesson_completed:
+          type: boolean
+        email_quiz_result:
+          type: boolean
+        email_achievement:
+          type: boolean
+        email_reminders:
+          type: boolean
+        email_system:
+          type: boolean
+        push_enabled:
+          type: boolean
+        push_lesson_completed:
+          type: boolean
+        push_quiz_result:
+          type: boolean
+        push_achievement:
+          type: boolean
+        push_reminders:
+          type: boolean
+        push_system:
+          type: boolean
+        in_app_enabled:
+          type: boolean
+        in_app_lesson_completed:
+          type: boolean
+        in_app_quiz_result:
+          type: boolean
+        in_app_achievement:
+          type: boolean
+        in_app_reminders:
+          type: boolean
+        in_app_system:
+          type: boolean
+        quiet_hours_start:
+          type: string
+          format: time
+          nullable: true
+        quiet_hours_end:
+          type: string
+          format: time
+          nullable: true
+        timezone:
+          type: string
+          maxLength: 50
+        reminder_frequency:
+          $ref: '#/components/schemas/ReminderFrequencyEnum'
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedNotificationTemplate:
+      type: object
+      description: Serializer for NotificationTemplate model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        title_template:
+          type: string
+          maxLength: 200
+        message_template:
+          type: string
+        notification_type:
+          $ref: '#/components/schemas/NotificationTypeEnum'
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        variables:
+          type: object
+          additionalProperties: {}
+        is_active:
+          type: boolean
+        auto_send:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedQuizSession:
+      type: object
+      description: Serializer for QuizSession model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        quiz:
+          allOf:
+          - $ref: '#/components/schemas/Quiz'
+          readOnly: true
+        session_key:
+          type: string
+          readOnly: true
+        current_question_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        current_question:
+          type: string
+          readOnly: true
+        progress:
+          type: string
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_activity:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+    PatchedStudentProgress:
+      type: object
+      description: Serializer for StudentProgress model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        lesson:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StudentProgressStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        time_spent:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        time_spent_display:
+          type: string
+          readOnly: true
+        score:
+          type: number
+          format: double
+          nullable: true
+        last_position:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        notes:
+          type: string
+          nullable: true
+        progress_percentage:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PatchedUserProfile:
+      type: object
+      description: Serializer for user profile
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        grade_level:
+          nullable: true
+          minimum: 1
+          maximum: 4
+          oneOf:
+          - $ref: '#/components/schemas/GradeLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        student_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        teacher_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        school:
+          allOf:
+          - $ref: '#/components/schemas/School'
+          readOnly: true
+        school_id:
+          type: integer
+          writeOnly: true
+        subject_specialties:
+          type: object
+          additionalProperties: {}
+        is_verified:
+          type: boolean
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        children:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+    PriorityEnum:
+      enum:
+      - LOW
+      - MEDIUM
+      - HIGH
+      - URGENT
+      type: string
+      description: |-
+        * `LOW` - Low
+        * `MEDIUM` - Medium
+        * `HIGH` - High
+        * `URGENT` - Urgent
+    ProgressMilestone:
+      type: object
+      description: Serializer for ProgressMilestone model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        milestone_type:
+          $ref: '#/components/schemas/MilestoneTypeEnum'
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+        achieved_at:
+          type: string
+          format: date-time
+          readOnly: true
+        metadata:
+          type: object
+          additionalProperties: {}
+        is_notified:
+          type: boolean
+      required:
+      - achieved_at
+      - description
+      - id
+      - milestone_type
+      - student
+      - title
+    Question:
+      type: object
+      description: Serializer for Question model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        question_text:
+          type: string
+        question_type:
+          $ref: '#/components/schemas/QuestionTypeEnum'
+        options:
+          type: object
+          additionalProperties: {}
+        explanation:
+          type: string
+          nullable: true
+        points:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        difficulty_level:
+          type: integer
+          maximum: 5
+          minimum: 1
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - question_text
+      - question_type
+      - updated_at
+    QuestionTypeEnum:
+      enum:
+      - MULTIPLE_CHOICE
+      - TRUE_FALSE
+      - MATCHING
+      - FILL_IN_BLANK
+      - SHORT_ANSWER
+      type: string
+      description: |-
+        * `MULTIPLE_CHOICE` - Multiple Choice
+        * `TRUE_FALSE` - True/False
+        * `MATCHING` - Matching
+        * `FILL_IN_BLANK` - Fill in the Blank
+        * `SHORT_ANSWER` - Short Answer
+    Quiz:
+      type: object
+      description: Serializer for Quiz model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        lesson:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/Subject'
+          readOnly: true
+        grade_level:
+          type: integer
+          maximum: 4
+          minimum: 1
+        time_limit:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        max_attempts:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        passing_score:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+        is_premium:
+          type: boolean
+        instructions:
+          type: string
+          nullable: true
+        question_count:
+          type: string
+          readOnly: true
+        average_score:
+          type: string
+          readOnly: true
+        attempt_count:
+          type: string
+          readOnly: true
+        is_attempted:
+          type: string
+          readOnly: true
+        best_score:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - attempt_count
+      - average_score
+      - best_score
+      - created_at
+      - grade_level
+      - id
+      - is_attempted
+      - lesson
+      - question_count
+      - subject
+      - title
+      - updated_at
+    QuizAttempt:
+      type: object
+      description: Serializer for QuizAttempt model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        quiz:
+          allOf:
+          - $ref: '#/components/schemas/Quiz'
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+        completed_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        score:
+          type: number
+          format: double
+          readOnly: true
+          nullable: true
+        total_questions:
+          type: integer
+          readOnly: true
+        correct_answers:
+          type: integer
+          readOnly: true
+        time_spent:
+          type: integer
+          readOnly: true
+        time_spent_display:
+          type: string
+          readOnly: true
+        score_percentage:
+          type: string
+          readOnly: true
+        is_passed:
+          type: boolean
+          readOnly: true
+        is_abandoned:
+          type: boolean
+        answers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Answer'
+          readOnly: true
+      required:
+      - answers
+      - completed_at
+      - correct_answers
+      - id
+      - is_passed
+      - quiz
+      - score
+      - score_percentage
+      - started_at
+      - student
+      - time_spent
+      - time_spent_display
+      - total_questions
+    QuizAttemptCreate:
+      type: object
+      description: Serializer for creating quiz attempts
+      properties:
+        quiz:
+          type: integer
+      required:
+      - quiz
+    QuizDetail:
+      type: object
+      description: Detailed serializer for Quiz with questions
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          nullable: true
+        lesson:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        subject:
+          allOf:
+          - $ref: '#/components/schemas/Subject'
+          readOnly: true
+        grade_level:
+          type: integer
+          maximum: 4
+          minimum: 1
+        time_limit:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+          nullable: true
+        max_attempts:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        passing_score:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        is_active:
+          type: boolean
+        is_premium:
+          type: boolean
+        instructions:
+          type: string
+          nullable: true
+        question_count:
+          type: string
+          readOnly: true
+        average_score:
+          type: string
+          readOnly: true
+        attempt_count:
+          type: string
+          readOnly: true
+        is_attempted:
+          type: string
+          readOnly: true
+        best_score:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Question'
+          readOnly: true
+      required:
+      - attempt_count
+      - average_score
+      - best_score
+      - created_at
+      - grade_level
+      - id
+      - is_attempted
+      - lesson
+      - question_count
+      - questions
+      - subject
+      - title
+      - updated_at
+    QuizFeedback:
+      type: object
+      description: Serializer for QuizFeedback model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        attempt:
+          allOf:
+          - $ref: '#/components/schemas/QuizAttempt'
+          readOnly: true
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+        comment:
+          type: string
+          nullable: true
+        difficulty_rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - attempt
+      - created_at
+      - id
+      - rating
+    QuizSession:
+      type: object
+      description: Serializer for QuizSession model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        quiz:
+          allOf:
+          - $ref: '#/components/schemas/Quiz'
+          readOnly: true
+        session_key:
+          type: string
+          readOnly: true
+        current_question_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        current_question:
+          type: string
+          readOnly: true
+        progress:
+          type: string
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+          readOnly: true
+        last_activity:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+          readOnly: true
+      required:
+      - current_question
+      - id
+      - is_active
+      - last_activity
+      - progress
+      - quiz
+      - session_key
+      - started_at
+    ReminderFrequencyEnum:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - NEVER
+      type: string
+      description: |-
+        * `DAILY` - Daily
+        * `WEEKLY` - Weekly
+        * `MONTHLY` - Monthly
+        * `NEVER` - Never
+    ReportScopeEnum:
+      enum:
+      - SYSTEM
+      - SCHOOL
+      - STUDENT
+      - TEACHER
+      - CONTENT
+      type: string
+      description: |-
+        * `SYSTEM` - System-wide
+        * `SCHOOL` - School-level
+        * `STUDENT` - Student-level
+        * `TEACHER` - Teacher-level
+        * `CONTENT` - Content-level
+    ReportTypeEnum:
+      enum:
+      - DAILY
+      - WEEKLY
+      - MONTHLY
+      - QUARTERLY
+      - YEARLY
+      - CUSTOM
+      type: string
+      description: |-
+        * `DAILY` - Daily Report
+        * `WEEKLY` - Weekly Report
+        * `MONTHLY` - Monthly Report
+        * `QUARTERLY` - Quarterly Report
+        * `YEARLY` - Yearly Report
+        * `CUSTOM` - Custom Report
+    RoleEnum:
+      enum:
+      - STUDENT
+      - TEACHER
+      - PARENT
+      - ADMIN
+      type: string
+      description: |-
+        * `STUDENT` - Student
+        * `TEACHER` - Teacher
+        * `PARENT` - Parent
+        * `ADMIN` - Administrator
+    School:
+      type: object
+      description: Serializer for School model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: string
+          nullable: true
+        city:
+          type: string
+          nullable: true
+          maxLength: 100
+        country:
+          type: string
+          maxLength: 100
+        is_active:
+          type: boolean
+      required:
+      - id
+      - name
+    StudentProgress:
+      type: object
+      description: Serializer for StudentProgress model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        lesson:
+          allOf:
+          - $ref: '#/components/schemas/Lesson'
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/StudentProgressStatusEnum'
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        time_spent:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        time_spent_display:
+          type: string
+          readOnly: true
+        score:
+          type: number
+          format: double
+          nullable: true
+        last_position:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        notes:
+          type: string
+          nullable: true
+        progress_percentage:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - lesson
+      - progress_percentage
+      - student
+      - time_spent_display
+      - updated_at
+    StudentProgressStatusEnum:
+      enum:
+      - NOT_STARTED
+      - IN_PROGRESS
+      - COMPLETED
+      - PAUSED
+      type: string
+      description: |-
+        * `NOT_STARTED` - Not Started
+        * `IN_PROGRESS` - In Progress
+        * `COMPLETED` - Completed
+        * `PAUSED` - Paused
+    Subject:
+      type: object
+      description: Serializer for Subject model
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        grade_level:
+          allOf:
+          - $ref: '#/components/schemas/GradeLevelEnum'
+          minimum: 1
+          maximum: 4
+        school:
+          type: integer
+          nullable: true
+        is_active:
+          type: boolean
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        icon_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        color_code:
+          type: string
+          maxLength: 7
+        chapter_count:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - chapter_count
+      - created_at
+      - grade_level
+      - id
+      - lesson_count
+      - name
+      - school
+      - updated_at
+    SubjectWithChapters:
+      type: object
+      description: Serializer for Subject with nested chapters
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          nullable: true
+        grade_level:
+          allOf:
+          - $ref: '#/components/schemas/GradeLevelEnum'
+          minimum: 1
+          maximum: 4
+        school:
+          type: integer
+          nullable: true
+        is_active:
+          type: boolean
+        order_index:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        icon_url:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        color_code:
+          type: string
+          maxLength: 7
+        chapter_count:
+          type: string
+          readOnly: true
+        lesson_count:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        chapters:
+          type: array
+          items:
+            $ref: '#/components/schemas/Chapter'
+          readOnly: true
+      required:
+      - chapter_count
+      - chapters
+      - created_at
+      - grade_level
+      - id
+      - lesson_count
+      - name
+      - school
+      - updated_at
+    UserProfile:
+      type: object
+      description: Serializer for user profile
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          readOnly: true
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+        email:
+          type: string
+          format: email
+          nullable: true
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        full_name:
+          type: string
+          readOnly: true
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+        grade_level:
+          nullable: true
+          minimum: 1
+          maximum: 4
+          oneOf:
+          - $ref: '#/components/schemas/GradeLevelEnum'
+          - $ref: '#/components/schemas/NullEnum'
+        student_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        teacher_id:
+          type: string
+          nullable: true
+          maxLength: 20
+        school:
+          allOf:
+          - $ref: '#/components/schemas/School'
+          readOnly: true
+        school_id:
+          type: integer
+          writeOnly: true
+        subject_specialties:
+          type: object
+          additionalProperties: {}
+        is_verified:
+          type: boolean
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        children:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - children
+      - created_at
+      - first_name
+      - full_name
+      - id
+      - last_login
+      - last_name
+      - school
+      - username
+    UserSession:
+      type: object
+      description: Serializer for user sessions
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        user:
+          allOf:
+          - $ref: '#/components/schemas/UserProfile'
+          readOnly: true
+        ip_address:
+          type: string
+          readOnly: true
+        login_time:
+          type: string
+          format: date-time
+          readOnly: true
+        last_activity:
+          type: string
+          format: date-time
+          readOnly: true
+        is_active:
+          type: boolean
+      required:
+      - id
+      - ip_address
+      - last_activity
+      - login_time
+      - user
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    oauth2:
+      type: oauth2
+      flows: {}
+tags:
+- name: Authentication
+  description: User authentication and account management
+- name: Content Management
+  description: Subjects, chapters, lessons, and media management
+- name: Quiz System
+  description: Quiz creation, attempts, and analytics
+- name: Progress Tracking
+  description: Student progress monitoring and learning streaks
+- name: Analytics
+  description: Data analytics and reporting
+- name: Notifications
+  description: Notification management and preferences
+- name: Parent Dashboard
+  description: Parent access to child progress and analytics
