@@ -32,8 +32,8 @@
     "@prisma/client": "^5.0.0"
   },
   "engines": {
-    "node": ">=16.0.0",
-    "python": ">=3.9.0"
+    "node": "18.x",
+    "python": "3.12.7"
   }
 }
 

@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: learning-cloud-api
+    env: python
+    plan: free
+    buildCommand: pip install --upgrade pip && pip install -r requirements.txt && python manage.py migrate && python manage.py collectstatic --noinput
+    startCommand: gunicorn learning_cloud.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: NODE_VERSION
+        value: 18.x
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        sync: false
+        # IMPORTANT: Set this in Render dashboard Environment Variables:
+        # postgresql://Ammen1:VB1jLXCZne7P@ep-billowing-water-031077-pooler.us-west-2.aws.neon.tech/helpful-tiger-64_db?sslmode=require
+        # Note: Remove 'channel_binding=require' if present in your connection string
+      - key: REDIS_URL
+        sync: false
+        # Optional: Set Redis URL if using Redis
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        value: learning-cloud-api.onrender.com
+    healthCheckPath: /health/
+

@@ -125,23 +125,40 @@ WSGI_APPLICATION = 'learning_cloud.wsgi.application'
 DATABASES = {}
 database_url = env('DATABASE_URL', default='')
 if database_url:
-    # Use DATABASE_URL when provided (docker-compose, prod)
+    # Use DATABASE_URL when provided (docker-compose, prod, Neon.tech)
     try:
         import dj_database_url  # type: ignore
-        DATABASES['default'] = dj_database_url.parse(database_url, conn_max_age=600)
-    except Exception:
+        # Parse database URL with SSL support for Neon.tech
+        db_config = dj_database_url.parse(database_url, conn_max_age=600)
+        
+        # Handle Neon.tech SSL requirements
+        # Remove channel_binding if present (can cause issues)
+        if 'sslmode' in database_url.lower():
+            # Ensure SSL options are set for Neon.tech
+            if 'OPTIONS' not in db_config:
+                db_config['OPTIONS'] = {}
+            # Neon.tech requires SSL
+            db_config['OPTIONS']['sslmode'] = 'require'
+        
+        DATABASES['default'] = db_config
+    except Exception as e:
         # Fallback parser without dj-database-url
-        from urllib.parse import urlparse
+        from urllib.parse import urlparse, parse_qs
 
         parsed = urlparse(database_url)
+        query_params = parse_qs(parsed.query)
+        
         DATABASES['default'] = {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': parsed.path.lstrip('/') or 'postgres',
+            'NAME': parsed.path.lstrip('/').split('?')[0] or 'postgres',
             'USER': parsed.username or 'postgres',
-            'PASSWORD': parsed.password or '12345',
+            'PASSWORD': parsed.password or '',
             'HOST': parsed.hostname or 'localhost',
             'PORT': str(parsed.port or '5432'),
             'CONN_MAX_AGE': 600,
+            'OPTIONS': {
+                'sslmode': 'require',  # Required for Neon.tech
+            },
         }
 else:
     # Fallback to individual envs (local dev)
